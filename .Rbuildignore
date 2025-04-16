@@ -6,3 +6,5 @@ test.R
 data*
 figures*
 results*
+^AUTHORS$
+^codemeta\.json$
