@@ -6,9 +6,9 @@
 \usage{
 CARD_extraction(
   data,
-  CARD_path,
+  CARD_path = system.file("CARD", package = "EXstat"),
   CARD_tmp = NULL,
-  CARD_dir = "WIP",
+  CARD_dir = "__all__",
   CARD_name = NULL,
   period_default = NULL,
   suffix = NULL,
@@ -35,8 +35,8 @@ e.g.
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{> data
 A tibble: 201 × 4
-   time         Q_obs  Q_sim  ID     
-   <date>       <dbl>  <dbl>  <chr>  
+   time         Q_obs  Q_sim  ID
+   <date>       <dbl>  <dbl>  <chr>
 1   2000-02-10   10     97.8  serie 1
 2   2000-02-11   19    -20.5  serie 1
 3   2000-02-12   13    -76.9  serie 1

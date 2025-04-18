@@ -1,4 +1,4 @@
-# Copyright 2021-2024 Louis Héraut (louis.heraut@inrae.fr)*1                     
+# Copyright 2021-2024 Louis Héraut (louis.heraut@inrae.fr)*1
 #           2023      Éric Sauquet (eric.sauquet@inrae.fr)*1
 #                     Jean-Philippe Vidal (jean-philippe.vidal@inrae.fr)*1
 #                     Nathan Pellerin
@@ -21,42 +21,44 @@
 # along with EXstat R package.
 # If not, see <https://www.gnu.org/licenses/>.
 
-
-
-
-reduce_process = function (data, id, Process,
-                           period_default=NULL,
-                           suffix=NULL,
-                           suffix_delimiter="_",
-                           cancel_lim=FALSE,
-                           expand_overwrite=NULL,
-                           sampling_period_overwrite=NULL,
-                           rmNApct=TRUE,
-                           rm_duplicates=FALSE,
-                           dev=FALSE,
-                           verbose=FALSE) {
-
+reduce_process = function(
+    data,
+    id,
+    Process,
+    period_default = NULL,
+    suffix = NULL,
+    suffix_delimiter = "_",
+    cancel_lim = FALSE,
+    expand_overwrite = NULL,
+    sampling_period_overwrite = NULL,
+    rmNApct = TRUE,
+    rm_duplicates = FALSE,
+    dev = FALSE,
+    verbose = FALSE
+) {
     if (verbose) {
-        print(paste0("Process ", id, "/", length(Process)-1))
+        print(paste0("Process ", id, "/", length(Process) - 1))
     }
-    
+
     process = Process[[paste0("P", id)]]
     process_names = names(process)
     for (pp in 1:length(process)) {
         assign(process_names[pp], process[[pp]])
     }
 
-    rm ("process")
+    rm("process")
     gc()
-    
-    if (!is.null(expand_overwrite) & id == (length(Process)-1)) {
+
+    if (!is.null(expand_overwrite) & id == (length(Process) - 1)) {
         expand = expand_overwrite
     }
-    
+
     if (is.null(sampling_period_overwrite)) {
         if (is.function(sampling_period[[1]])) {
-            sampling_period = dplyr::tibble(sp=list(sampling_period[[1]]),
-                                         args=sampling_period[2])
+            sampling_period = dplyr::tibble(
+                sp = list(sampling_period[[1]]),
+                args = sampling_period[2]
+            )
         }
     } else {
         sampling_period = sampling_period_overwrite
@@ -72,32 +74,33 @@ reduce_process = function (data, id, Process,
     }
 
     # EXtraction
-    data = process_extraction(data=data,
-                              funct=funct,
-                              funct_args=funct_args,
-                              time_step=time_step,
-                              sampling_period=sampling_period,
-                              period=period,
-                              is_date=is_date,
-                              NApct_lim=NApct_lim,
-                              NAyear_lim=NAyear_lim,
-                              Seasons=Seasons,
-                              nameEX=nameEX,
-                              suffix=suffix,
-                              suffix_delimiter=suffix_delimiter,
-                              keep=keep,
-                              compress=compress,
-                              expand=expand,
-                              rmNApct=rmNApct,
-                              rm_duplicates=rm_duplicates,
-                              dev=dev,
-                              verbose=verbose)
-    return (data)
+    data = process_extraction(
+        data = data,
+        funct = funct,
+        funct_args = funct_args,
+        time_step = time_step,
+        sampling_period = sampling_period,
+        period = period,
+        is_date = is_date,
+        NApct_lim = NApct_lim,
+        NAyear_lim = NAyear_lim,
+        Seasons = Seasons,
+        nameEX = nameEX,
+        suffix = suffix,
+        suffix_delimiter = suffix_delimiter,
+        keep = keep,
+        compress = compress,
+        expand = expand,
+        rmNApct = rmNApct,
+        rm_duplicates = rm_duplicates,
+        dev = dev,
+        verbose = verbose
+    )
+    return(data)
 }
 
 
-
-get_last_Process = function (Process) {
+get_last_Process = function(Process) {
     nProcess = length(Process) - 1
     for (i in 1:nProcess) {
         process = Process[[paste0("P", i)]]
@@ -106,10 +109,9 @@ get_last_Process = function (Process) {
             assign(process_names[pp], process[[pp]])
         }
     }
-    res = list(compress=compress, time_step=time_step, Seasons=Seasons)
-    return (res)
+    res = list(compress = compress, time_step = time_step, Seasons = Seasons)
+    return(res)
 }
-
 
 
 #' @title CARD_extraction
@@ -124,8 +126,8 @@ get_last_Process = function (Process) {
 #' ```
 #' > data
 #' A tibble: 201 × 4
-#'    time         Q_obs  Q_sim  ID     
-#'    <date>       <dbl>  <dbl>  <chr>  
+#'    time         Q_obs  Q_sim  ID
+#'    <date>       <dbl>  <dbl>  <chr>
 #' 1   2000-02-10   10     97.8  serie 1
 #' 2   2000-02-11   19    -20.5  serie 1
 #' 3   2000-02-12   13    -76.9  serie 1
@@ -137,7 +139,7 @@ get_last_Process = function (Process) {
 #' 106 2001-01-04  1.1       91  serie 2
 #'     ...
 #' ```
-#' 
+#'
 #' @param CARD_path A [character][base::character] string representing the path to the downloaded CARD directory (it should end with `"CARD"`). In this directory, you can copy and paste (and later modify) CARDs from the `"__all__"` subdirectory that you want to use for an analysis represented by a subdirectory named `CARD_dir` (see `CARD_tmp` if you want to locate your `CARD_dir` directory elsewhere). In your CARDs, you can specify functions available in the scripts of the `"__tools__"` subdirectory.
 #' @param CARD_tmp If you want to locate the `CARD_dir` directory somewhere other than in the `CARD_path` directory, you can specify a [character][base::character] string in `CARD_tmp` for a path where the `CARD_dir` subdirectory of CARDs will be searched. Default is `"NULL"` if you want to locate the `CARD_dir` subdirectory of CARDs in `CARD_path`.
 #' @param CARD_dir A [character][base::character] string for the name of a subdirectory in `CARD_path` (or `CARD_tmp`) where the CARD parameterization files are located for an analysis. Default is `"WIP"`.
@@ -165,14 +167,14 @@ get_last_Process = function (Process) {
 #' - [process_extraction()] for extracting variables.
 #' - [process_trend()] for performing trend analysis on extracted variables.
 #' - [CARD_management()] for managing CARD parameterization files.
-#' 
+#'
 #' @examples
 #' ## Creation of random data set
 #' set.seed(99)
 #' Start = as.Date("2000-02-01")
 #' End = as.Date("2010-04-04")
 #' Date = seq.Date(Start, End, by="day")
-#' 
+#'
 #' # First time serie
 #' data_1 = dplyr::tibble(time=Date,
 #'                        X_state1=as.numeric(Date) +
@@ -181,7 +183,7 @@ get_last_Process = function (Process) {
 #'                            rnorm(length(Date), 0, 1),
 #'                        id="serie 1")
 #' data_1$X_state2[round(runif(500, 1, nrow(data_1)))] = NA
-#' 
+#'
 #' # Second time serie
 #' data_2 = dplyr::tibble(time=Date,
 #'                        X_state1=as.numeric(Date) +
@@ -190,10 +192,10 @@ get_last_Process = function (Process) {
 #'                            rnorm(length(Date), 0, 1),
 #'                        id="serie 2")
 #' data_2$X_state2[round(runif(1000, 1, nrow(data_2)))] = NA
-#' 
+#'
 #' # Final data for testing
 #' data = dplyr::bind_rows(data_1, data_2)
-#' 
+#'
 #' ## Extraction with CARD
 #' # Copy and paste CARD from __all__ to the CARD_dir directory (or
 #' # use CARD_tmp with CARD_management function) and then process the
@@ -208,49 +210,57 @@ get_last_Process = function (Process) {
 #'                 cancel_lim=TRUE,
 #'                 verbose=TRUE)
 #' }
-#' 
+#'
 #' @export
 #' @md
-CARD_extraction = function (data,
-                            CARD_path,
-                            CARD_tmp=NULL,
-                            CARD_dir="WIP",
-                            CARD_name=NULL,
-                            period_default=NULL,
-                            suffix=NULL,
-                            suffix_delimiter="_",
-                            cancel_lim=FALSE,
-                            simplify=FALSE,
-                            expand_overwrite=NULL,
-                            sampling_period_overwrite=NULL,
-                            rmNApct=TRUE,
-                            rm_duplicates=FALSE,
-                            dev=FALSE,
-                            verbose=FALSE) {
-    
+CARD_extraction = function(
+    data,
+    CARD_path = system.file("CARD", package = "EXstat"),
+    CARD_tmp = NULL,
+    CARD_dir = "__all__",
+    CARD_name = NULL,
+    period_default = NULL,
+    suffix = NULL,
+    suffix_delimiter = "_",
+    cancel_lim = FALSE,
+    simplify = FALSE,
+    expand_overwrite = NULL,
+    sampling_period_overwrite = NULL,
+    rmNApct = TRUE,
+    rm_duplicates = FALSE,
+    dev = FALSE,
+    verbose = FALSE
+) {
     if (is.null(CARD_tmp)) {
         CARD_tmp = CARD_path
     }
-    
-    CARD_dirpath = file.path(CARD_tmp, CARD_dir)   
-    script_to_analyse = list.files(CARD_dirpath,
-                                   pattern=".R$",
-                                   recursive=TRUE,
-                                   include.dirs=FALSE,
-                                   full.names=FALSE)
+
+    CARD_dirpath = file.path(CARD_tmp, CARD_dir)
+    script_to_analyse = list.files(
+        CARD_dirpath,
+        pattern = ".R$",
+        recursive = TRUE,
+        include.dirs = FALSE,
+        full.names = FALSE
+    )
 
     if (!is.null(CARD_name)) {
         script_to_analyse =
-            script_to_analyse[gsub("^[[:digit:]]+[_]", "",
-                                   basename(script_to_analyse)) %in%
-                              paste0(CARD_name, ".R")]
+            script_to_analyse[
+                gsub("^[[:digit:]]+[_]", "", basename(script_to_analyse)) %in%
+                    paste0(CARD_name, ".R")
+            ]
     }
-    
-    script_to_analyse = script_to_analyse[!grepl("__default__.R",
-                                                 script_to_analyse)]
 
-    topic_to_analyse = list.dirs(CARD_dirpath,
-                                 recursive=TRUE, full.names=FALSE)
+    script_to_analyse = script_to_analyse[
+        !grepl("__default__.R", script_to_analyse)
+    ]
+
+    topic_to_analyse = list.dirs(
+        CARD_dirpath,
+        recursive = TRUE,
+        full.names = FALSE
+    )
     topic_to_analyse = topic_to_analyse[topic_to_analyse != ""]
     topic_to_analyse = gsub('.*_', '', topic_to_analyse)
 
@@ -264,24 +274,26 @@ CARD_extraction = function (data,
     dataEX = replicate(nScript, list(NULL))
 
     for (ss in 1:nScript) {
-
         script = script_to_analyse[ss]
 
-        list_path = list.files(file.path(CARD_path,
-                                         "__tools__"),
-                               pattern='*.R$',
-                               recursive=TRUE,
-                               full.names=TRUE)
+        list_path = list.files(
+            file.path(CARD_path, "__tools__"),
+            pattern = '*.R$',
+            recursive = TRUE,
+            full.names = TRUE
+        )
         for (path in list_path) {
-            source(path, encoding='UTF-8')    
+            source(path, encoding = 'UTF-8')
         }
 
         Process_default = sourceProcess(
-            file.path(CARD_path, "__default__.R"))
-        
+            file.path(CARD_path, "__default__.R")
+        )
+
         Process = sourceProcess(
             file.path(CARD_dirpath, script),
-            default=Process_default)
+            default = Process_default
+        )
 
         principal = Process$P
         principal_names = names(principal)
@@ -291,10 +303,10 @@ CARD_extraction = function (data,
 
         variable = variable_en
         split_script = split_path(script)
-        
+
         if (length(split_script) == 1) {
             if (!('None' %in% names(structure))) {
-                structure = append(list(None=c()), structure)
+                structure = append(list(None = c()), structure)
             }
             structure[['None']] = c(structure[['None']], variable)
         } else if (length(split_script) == 2) {
@@ -306,7 +318,7 @@ CARD_extraction = function (data,
         if (any(variable %in% variable_analyse)) {
             next
         }
-        
+
         variable_analyse = c(variable_analyse, variable)
 
         if (verbose) {
@@ -314,34 +326,35 @@ CARD_extraction = function (data,
         }
 
         nProcess = length(Process) - 1
-        
+
         dataEX[[ss]] =
-            purrr::reduce(1:nProcess,
-                          reduce_process,
-                          Process=Process,
-                          period_default=period_default,
-                          suffix=suffix,
-                          suffix_delimiter=suffix_delimiter,
-                          cancel_lim=cancel_lim,
-                          expand_overwrite=expand_overwrite,
-                          sampling_period_overwrite=sampling_period_overwrite[[ss]],
-                          rmNApct=rmNApct,
-                          rm_duplicates=rm_duplicates,
-                          dev=dev,
-                          verbose=verbose,
-                          .init=data)
-        
-        
+            purrr::reduce(
+                1:nProcess,
+                reduce_process,
+                Process = Process,
+                period_default = period_default,
+                suffix = suffix,
+                suffix_delimiter = suffix_delimiter,
+                cancel_lim = cancel_lim,
+                expand_overwrite = expand_overwrite,
+                sampling_period_overwrite = sampling_period_overwrite[[ss]],
+                rmNApct = rmNApct,
+                rm_duplicates = rm_duplicates,
+                dev = dev,
+                verbose = verbose,
+                .init = data
+            )
+
         if (tibble::is_tibble(dataEX[[ss]])) {
             dataEX[[ss]] = list(dataEX[[ss]])
             if (!simplify) {
-                variable = paste0(variable, collapse=" ")
+                variable = paste0(variable, collapse = " ")
                 names(dataEX[[ss]]) = variable
             }
         }
 
         res = get_last_Process(Process)
-        rm ("Process")
+        rm("Process")
         gc()
 
         compress = res$compress
@@ -352,51 +365,52 @@ CARD_extraction = function (data,
             sampling_period_en = sampling_period_overwrite[[ss]]
             sampling_period_fr = sapply(
                 lapply(strsplit(sampling_period_en, "-"), rev),
-                paste0, collapse="-")
-            sampling_period_en = paste0(sampling_period_en, collapse=", ")
-            sampling_period_fr = paste0(sampling_period_fr, collapse=", ")
+                paste0,
+                collapse = "-"
+            )
+            sampling_period_en = paste0(sampling_period_en, collapse = ", ")
+            sampling_period_fr = paste0(sampling_period_fr, collapse = ", ")
         }
-        
+
         metaEX =
             dplyr::bind_rows(
-                       metaEX,
-                       dplyr::tibble(
-                                  ### English ___
-                                  variable_en=variable_en,
-                                  unit_en=unit_en,
-                                  name_en=name_en,
-                                  description_en=description_en,
-                                  method_en=method_en,
-                                  sampling_period_en=sampling_period_en,
-                                  topic_en=topic_en,
-                                  ### French ___
-                                  variable_fr=variable_fr,
-                                  unit_fr=unit_fr,
-                                  name_fr=name_fr,
-                                  description_fr=description_fr,
-                                  method_fr=method_fr,
-                                  sampling_period_fr=sampling_period_fr,
-                                  topic_fr=topic_fr,
-                                  ### Global ___
-                                  source=source,
-                                  is_date=is_date, 
-                                  to_normalise=to_normalise,
-                                  palette=palette))
+                metaEX,
+                dplyr::tibble(
+                    ### English ___
+                    variable_en = variable_en,
+                    unit_en = unit_en,
+                    name_en = name_en,
+                    description_en = description_en,
+                    method_en = method_en,
+                    sampling_period_en = sampling_period_en,
+                    topic_en = topic_en,
+                    ### French ___
+                    variable_fr = variable_fr,
+                    unit_fr = unit_fr,
+                    name_fr = name_fr,
+                    description_fr = description_fr,
+                    method_fr = method_fr,
+                    sampling_period_fr = sampling_period_fr,
+                    topic_fr = topic_fr,
+                    ### Global ___
+                    source = source,
+                    is_date = is_date,
+                    to_normalise = to_normalise,
+                    palette = palette
+                )
+            )
     }
-    rm ("data")
+    rm("data")
     gc()
 
-    dataEX = unlist(dataEX, recursive=FALSE)
-    
+    dataEX = unlist(dataEX, recursive = FALSE)
+
     if (simplify) {
-        by = names(dplyr::select(dataEX[[1]],
-                                 dplyr::where(is.character)))
-        dataEX = purrr::reduce(.x=dataEX,
-                               .f=dplyr::full_join,
-                               by=by)
+        by = names(dplyr::select(dataEX[[1]], dplyr::where(is.character)))
+        dataEX = purrr::reduce(.x = dataEX, .f = dplyr::full_join, by = by)
     }
 
-    return (list(metaEX=metaEX, dataEX=dataEX))
+    return(list(metaEX = metaEX, dataEX = dataEX))
 }
 
 
@@ -411,7 +425,7 @@ CARD_extraction = function (data,
 #' - [process_trend()] for performing trend analysis on extracted variables.
 #' - [CARD_management()] for managing CARD parameterization files.
 #' - [CARD_extraction()] for extracting variables using CARD parameterization files.
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' Process_default = sourceProcess(path="path/to/CARD/__default__.R")
@@ -420,50 +434,47 @@ CARD_extraction = function (data,
 #' }
 #' @export
 #' @md
-sourceProcess = function (path, default=NULL) {
+sourceProcess = function(path, default = NULL) {
     CARD = new.env()
-    source(path, local=CARD, encoding='UTF-8')
-    lsCARD = ls(envir=CARD)
+    source(path, local = CARD, encoding = 'UTF-8')
+    lsCARD = ls(envir = CARD)
 
     Process_def = lsCARD[grepl("P[.]", lsCARD)]
-    Process = lapply(Process_def, get, envir=CARD)
+    Process = lapply(Process_def, get, envir = CARD)
     names(Process) = gsub("P[.]", "", Process_def)
     Process = list(Process)
     names(Process) = "P"
-    
+
     if (!is.null(default)) {
         nOK = !(names(default$P) %in% names(Process$P))
         Process$P = append(Process$P, default$P[nOK])
     }
-    
+
     process_allAtt = lsCARD[grepl("P[[:digit:]][.]", lsCARD)]
-    process_allNames = stringr::str_extract(process_allAtt,
-                                            "P[[:digit:]]")
+    process_allNames = stringr::str_extract(process_allAtt, "P[[:digit:]]")
     process_names = process_allNames[!duplicated(process_allNames)]
     Nprocess = length(process_names)
 
     for (i in 1:Nprocess) {
         process_name = paste0("P", i)
-        IDprocess = grepl(paste0(process_name, "[.]"),
-                          process_allAtt)
+        IDprocess = grepl(paste0(process_name, "[.]"), process_allAtt)
 
         process_att = process_allAtt[IDprocess]
-        process = lapply(process_att, get, envir=CARD)
-        
-        names(process) = gsub("P[[:digit:]][.]", "",
-                              process_att)
+        process = lapply(process_att, get, envir = CARD)
+
+        names(process) = gsub("P[[:digit:]][.]", "", process_att)
         process = list(process)
         names(process) = process_name
 
         if (!is.null(default)) {
             nOK = !(names(default$P1) %in%
-                    names(process[[process_name]]))
+                names(process[[process_name]]))
             process[[process_name]] =
                 append(process[[process_name]], default$P1[nOK])
         }
         Process = append(Process, process)
     }
 
-    rm (list=ls(envir=CARD), envir=CARD)
-    return (Process)
+    rm(list = ls(envir = CARD), envir = CARD)
+    return(Process)
 }
