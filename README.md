@@ -5,6 +5,7 @@
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-green)](https://lifecycle.r-lib.org/articles/stages.html)
 ![](https://img.shields.io/github/last-commit/super-lou/EXstat)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code_of_conduct.md) 
+[![R-CMD-check](https://github.com/inrae/EXstat/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/inrae/EXstat/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 **EXstat** is a R package which provide an efficient and simple solution to aggregate and analyze the stationarity of time series.
