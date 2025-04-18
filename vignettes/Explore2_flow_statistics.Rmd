@@ -51,7 +51,7 @@ results <- CARD_extraction(
   CARD_tmp = CARD_tmp,
   CARD_dir = CARD_dir,
   simplify = TRUE,
-  verbose = TRUE
+  verbose = FALSE
 )
 results
 ```
@@ -62,16 +62,19 @@ CARD_dir <- "__all__/Flow"
 CARD_dirpath = file.path(CARD_path, CARD_dir)
 script_to_analyse = list.files(
         path = CARD_dirpath,
-        pattern = ".R$",
+        pattern = "\\.R$",
         recursive = TRUE,
         include.dirs = FALSE,
         full.names = FALSE
     )
+script_to_analyse <- script_to_analyse[grepl("criteria", script_to_analyse)]
 CARD_name <- gsub("\\.R$", "", basename(script_to_analyse))
 # Remove indicators linked to Explore2 horizons
 CARD_name <- CARD_name[!grepl("_H[0-3]*$", CARD_name)]
 # Remove indicators that can't be computed (Qobs/Qsim comparisons)
 CARD_name <- CARD_name[!grepl("Bias|KGE|NSE|STD", CARD_name)]
+# Remove indicators that return logical
+CARD_name <- CARD_name[!grepl("alpha", CARD_name)]
 # Remove bugged indicators
 CARD_name <- CARD_name[!CARD_name %in% c("med{dtRec}")]
 
@@ -81,13 +84,15 @@ CARD_name <- CARD_name[!CARD_name %in% c("med{dtRec}")]
 results <- CARD_extraction(
   df %>% rename(Q = value),
   CARD_name = CARD_name,
-  simplify = FALSE, 
+  simplify = TRUE, 
   verbose = FALSE
 )
+results
 ```
 
 ```{r}
-data_nrows <- sapply(results$dataEX, nrow)
-CARD_names <- names(data_nrows[data_nrows == 1])
+metaEX <- results$metaEX |> select("variable_en", "name_en", "unit_en")
+dataEX <- CARD_transpose_data(results$dataEX) |> left_join(metaEX, by = join_by("name" == "variable_en"))
+knitr::kable(dataEX)
 ```
 
