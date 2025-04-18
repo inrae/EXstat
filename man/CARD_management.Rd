@@ -5,16 +5,18 @@
 \title{CARD_management}
 \usage{
 CARD_management(
-  CARD_path,
-  CARD_tmp = NULL,
+  CARD_path = system.file("CARD", package = "EXstat"),
+  CARD_tmp = tempfile(),
   CARD_dir = "WIP",
   CARD_name = c("QA", "QJXA"),
-  layout = NULL,
+  layout = c(CARD_dir, "[", CARD_name, "]"),
   underscore_to_white = TRUE,
   add_id = TRUE,
   overwrite = TRUE,
   verbose = FALSE,
-  args = NULL
+  args = list(CARD_path = CARD_path, CARD_tmp = CARD_tmp, layout = layout,
+    underscore_to_white = underscore_to_white, add_id = add_id, overwrite = overwrite,
+    verbose = verbose)
 )
 }
 \arguments{

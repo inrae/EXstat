@@ -1,4 +1,4 @@
-# Copyright 2021-2024 Louis Héraut (louis.heraut@inrae.fr)*1                     
+# Copyright 2021-2024 Louis Héraut (louis.heraut@inrae.fr)*1
 #           2023      Éric Sauquet (eric.sauquet@inrae.fr)*1
 #                     Jean-Philippe Vidal (jean-philippe.vidal@inrae.fr)*1
 #                     Nathan Pellerin
@@ -20,8 +20,6 @@
 # You should have received a copy of the GNU General Public License
 # along with EXstat R package.
 # If not, see <https://www.gnu.org/licenses/>.
-
-
 
 #' @title CARD_management
 #' @description Manage the CARD directory structure by performing automatic file operations to copy and paste CARD parameterization files more efficiently.
@@ -47,7 +45,7 @@
 #' - [process_extraction()] for extracting variables.
 #' - [process_trend()] for performing trend analysis on extracted variables.
 #' - [CARD_extraction()] for extracting variables using CARD parameterization files.
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' CARD_management(CARD_path="path/to/CARD",
@@ -63,41 +61,36 @@
 #'                 overwrite=TRUE,
 #'                 verbose=TRUE)
 #' }
-#' 
+#'
 #' @export
 #' @md
-CARD_management = function (CARD_path,
-                            CARD_tmp=NULL,
-                            CARD_dir="WIP",
-                            CARD_name=c("QA", "QJXA"),
-                            layout=NULL,
-                            underscore_to_white=TRUE,
-                            add_id=TRUE,
-                            overwrite=TRUE,
-                            verbose=FALSE,
-                            args=NULL) {
+CARD_management = function(
+    CARD_path = system.file("CARD", package = "EXstat"),
+    CARD_tmp = tempfile(),
+    CARD_dir = "WIP",
+    CARD_name = c("QA", "QJXA"),
+    layout = c(CARD_dir, "[", CARD_name, "]"),
+    underscore_to_white = TRUE,
+    add_id = TRUE,
+    overwrite = TRUE,
+    verbose = FALSE,
+    args = list(
+        CARD_path = CARD_path,
+        CARD_tmp = CARD_tmp,
+        layout = layout,
+        underscore_to_white = underscore_to_white,
+        add_id = add_id,
+        overwrite = overwrite,
+        verbose = verbose
+    )
+) {
 
-    if (is.null(layout)) {
-        layout = c(CARD_dir, "[", CARD_name, "]")
-    }
-    
-    if (is.null(args)) {
-        args = list(CARD_path=CARD_path, CARD_tmp=CARD_tmp, layout=layout,
-                    underscore_to_white=underscore_to_white,
-                    add_id=add_id, overwrite=overwrite,
-                    verbose=verbose)        
-    }
-
-    if (is.null(args$CARD_tmp)) {
-        args$CARD_tmp = file.path(args$CARD_path)
-    }
-        
     if (args$verbose) {
         remind(args)
     }
     if (all(args$layout == "")) {
         print("Error : --layout is void\n", stderr())
-        stop ()
+        stop()
     }
 
     source_dir = file.path(args$CARD_path, "__all__")
@@ -107,17 +100,16 @@ CARD_management = function (CARD_path,
     test1 = "[[]|[(]|[]]|[)]"
     test2 = "[[]|[(]"
     for (i in 1:nOUT) {
-        if (i < nOUT & !grepl(test1, OUT[i]) & !grepl(test2, OUT[(i+1)])) {
+        if (i < nOUT & !grepl(test1, OUT[i]) & !grepl(test2, OUT[(i + 1)])) {
             OUT[i] = paste0(OUT[i], ".(NA)")
         }
         if (i == nOUT & !grepl(test1, OUT[(i)])) {
             OUT[i] = paste0(OUT[i], ".(NA)")
         }
     }
-    OUT = unlist(sapply(OUT, strsplit, split="[.]"),
-                 use.names=FALSE)
+    OUT = unlist(sapply(OUT, strsplit, split = "[.]"), use.names = FALSE)
 
-    OUT = paste0(OUT, collapse="','")
+    OUT = paste0(OUT, collapse = "','")
     OUT = gsub("[]]", ")", OUT)
     OUT = gsub("[[]|[(]", "=list(", OUT)
     OUT = gsub("[,]['][=]", "=", OUT)
@@ -125,8 +117,8 @@ CARD_management = function (CARD_path,
     OUT = gsub("[,]['][)]", ")", OUT)
     OUT = gsub("[)][']", ")", OUT)
     OUT = paste0("'", OUT)
-    OUT = paste0("list(", OUT, ")")    
-    OUT = eval(parse(text=OUT))
+    OUT = paste0("list(", OUT, ")")
+    OUT = eval(parse(text = OUT))
     OUT = unlist(OUT)
     OUT = names(OUT)
     OUT = gsub("[.]", "/", OUT)
@@ -144,22 +136,17 @@ CARD_management = function (CARD_path,
 
         if (nsd < 0) {
             print("Error : No tmp detect\n", stderr())
-            stop ()
-            
+            stop()
         } else if (nsd == 0) {
             id = i
-            
         } else if (nsd > 0) {
-
             for (j in 1:nsd) {
-                
-                if (!(path[(j+1)] %in% save)) {
-
+                if (!(path[(j + 1)] %in% save)) {
                     if (length(SUB) >= nsd) {
                         if (any(path %in% save)) {
                             SUB[sum(path %in% save)] =
                                 SUB[sum(path %in% save)] + 1
-                            SUB[(sum(path %in% save)+1):length(SUB)] = 1
+                            SUB[(sum(path %in% save) + 1):length(SUB)] = 1
                         } else {
                             SUB[nsd] = SUB[nsd] + 1
                         }
@@ -167,31 +154,32 @@ CARD_management = function (CARD_path,
                         SUB = c(SUB, 1)
                     }
                     id = 1
-                    save = c(save, path[(j+1)])
+                    save = c(save, path[(j + 1)])
                 }
 
-                obj = path[(j+1)]
+                obj = path[(j + 1)]
                 if (args$underscore_to_white) {
                     obj = gsub("[_]", " ", obj)
                 }
 
                 if (args$add_id) {
-                    path[(j+1)] = paste0(formatC(SUB[j],
-                                                 width=3,
-                                                 flag="0"),
-                                         "_", obj)
+                    path[(j + 1)] = paste0(
+                        formatC(SUB[j], width = 3, flag = "0"),
+                        "_",
+                        obj
+                    )
                 }
             }
         }
-        
+
         IN = c(IN, path[len])
         DIR = c(DIR, do.call(file.path, as.list(path[-len])))
-        
+
         if (args$add_id) {
-            idC = formatC(id, width=3, flag="0")
+            idC = formatC(id, width = 3, flag = "0")
             path[len] = paste0(idC, "_", path[len])
         }
-        
+
         id = id + 1
         OUT[i] = do.call(file.path, as.list(path))
     }
@@ -199,47 +187,61 @@ CARD_management = function (CARD_path,
     DIR = DIR[!duplicated(DIR)]
     DIR = file.path(args$CARD_tmp, DIR)
 
-    if (any(dir.exists(DIR)) &
-        args$overwrite |
-        !any(dir.exists(DIR))) {
-        if (any(dir.exists(DIR)) &
-            args$overwrite) {
-            unlink(DIR, recursive=TRUE, force=TRUE)
+    if (
+        any(dir.exists(DIR)) &
+            args$overwrite |
+            !any(dir.exists(DIR))
+    ) {
+        if (
+            any(dir.exists(DIR)) &
+                args$overwrite
+        ) {
+            unlink(DIR, recursive = TRUE, force = TRUE)
         }
         for (i in 1:n) {
-            dir.create(DIR[i], recursive=TRUE)
+            dir.create(DIR[i], recursive = TRUE)
         }
 
         for (i in 1:n) {
-            files = list.files(source_dir, recursive=TRUE)
+            files = list.files(source_dir, recursive = TRUE)
             names(files) = basename(files)
-            
-            file.copy(file.path(source_dir, files[IN[i]]),
-                      file.path(args$CARD_tmp, OUT[i]))
+
+            file.copy(
+                file.path(source_dir, files[IN[i]]),
+                file.path(args$CARD_tmp, OUT[i])
+            )
         }
-        
-    } else if (any(dir.exists(DIR)) &
-               !args$overwrite) {
-        warning (paste0("Some directories in ", paste0(DIR, collapse=", "),
-                        " already exists. Please use 'overwrite=TRUE' if you want to overwrite current directories."))
+    } else if (
+        any(dir.exists(DIR)) &
+            !args$overwrite
+    ) {
+        warning(paste0(
+            "Some directories in ",
+            paste0(DIR, collapse = ", "),
+            " already exists. Please use 'overwrite=TRUE' if you want to overwrite current directories."
+        ))
     }
 
     if (args$verbose) {
         print("done")
     }
+    return(CARD_tmp)
 }
 
 
-remind = function (args) {
+remind = function(args) {
     print("PARAMETERS:")
     n = length(args)
     args_name = names(args)
     for (i in 1:n) {
-        print(paste0("    --", args_name[i], " ",
-                     paste0(args[[i]], collapse=" ")))
+        print(paste0(
+            "    --",
+            args_name[i],
+            " ",
+            paste0(args[[i]], collapse = " ")
+        ))
     }
 }
-
 
 # CARD_path = "/home/louis/Documents/bouleau/INRAE/project/CARD_project/CARD"
 # CARD_tmp = "/home/louis/Téléchargements/clara"
