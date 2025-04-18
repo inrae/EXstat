@@ -10,3 +10,7 @@ results*
 ^codemeta\.json$
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^data-raw$
