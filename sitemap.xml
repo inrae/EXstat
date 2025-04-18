@@ -1,0 +1,27 @@
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>/404.html</loc></url>
+<url><loc>/CODE_OF_CONDUCT.html</loc></url>
+<url><loc>/LICENSE-text.html</loc></url>
+<url><loc>/articles/Explore2_flow_statistics.html</loc></url>
+<url><loc>/articles/index.html</loc></url>
+<url><loc>/authors.html</loc></url>
+<url><loc>/index.html</loc></url>
+<url><loc>/reference/CARD_extraction.html</loc></url>
+<url><loc>/reference/CARD_management.html</loc></url>
+<url><loc>/reference/CARD_transpose_data.html</loc></url>
+<url><loc>/reference/EXstat.html</loc></url>
+<url><loc>/reference/GeneralMannKendall_WRAP.html</loc></url>
+<url><loc>/reference/HurstLkh.html</loc></url>
+<url><loc>/reference/estimateHurst.html</loc></url>
+<url><loc>/reference/fieldSignificance_FDR.html</loc></url>
+<url><loc>/reference/generalMannKendall.html</loc></url>
+<url><loc>/reference/getAR1Correction.html</loc></url>
+<url><loc>/reference/getMKStat.html</loc></url>
+<url><loc>/reference/getTiesCorrection.html</loc></url>
+<url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/process_extraction.html</loc></url>
+<url><loc>/reference/process_trend.html</loc></url>
+<url><loc>/reference/randomizedNormalScore.html</loc></url>
+<url><loc>/reference/sourceProcess.html</loc></url>
+</urlset>
+
