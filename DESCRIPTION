@@ -47,5 +47,6 @@ RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
 Suggests: 
     knitr,
+    readr,
     rmarkdown
 VignetteBuilder: knitr
