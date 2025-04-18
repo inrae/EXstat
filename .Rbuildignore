@@ -8,3 +8,5 @@ figures*
 results*
 ^AUTHORS$
 ^codemeta\.json$
+^.*\.Rproj$
+^\.Rproj\.user$

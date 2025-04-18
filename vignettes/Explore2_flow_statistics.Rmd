@@ -1,0 +1,93 @@
+---
+title: "Explore2_flow_statistics"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Explore2_flow_statistics}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(EXstat)
+library(dplyr)
+library(tidyr)
+```
+
+Import data:
+
+```{r}
+df <- readr::read_tsv(
+  system.file( "extdata", "Aqui-FR-Qnat_1852_2008_Seine.csv", package = "EXstat")
+)
+```
+
+Format data in tidy format:
+
+```{r}
+df <- df |> pivot_longer(!date)
+df
+```
+
+```{r}
+CARD_dir <- "analysis1"
+CARD_name = c("QMNA-5", "BFI_Wal")
+CARD_tmp <- CARD_management(
+  CARD_dir = CARD_dir,
+  CARD_name = CARD_name,
+  verbose = TRUE
+)
+```
+
+```{r}
+results <- CARD_extraction(
+  df %>% rename(Q = value),
+  CARD_tmp = CARD_tmp,
+  CARD_dir = CARD_dir,
+  simplify = TRUE,
+  verbose = TRUE
+)
+results
+```
+
+```{r}
+CARD_path <- system.file("CARD", package = "EXstat")
+CARD_dir <- "__all__/Flow"
+CARD_dirpath = file.path(CARD_path, CARD_dir)
+script_to_analyse = list.files(
+        path = CARD_dirpath,
+        pattern = ".R$",
+        recursive = TRUE,
+        include.dirs = FALSE,
+        full.names = FALSE
+    )
+CARD_name <- gsub("\\.R$", "", basename(script_to_analyse))
+# Remove indicators linked to Explore2 horizons
+CARD_name <- CARD_name[!grepl("_H[0-3]*$", CARD_name)]
+# Remove indicators that can't be computed (Qobs/Qsim comparisons)
+CARD_name <- CARD_name[!grepl("Bias|KGE|NSE|STD", CARD_name)]
+# Remove bugged indicators
+CARD_name <- CARD_name[!CARD_name %in% c("med{dtRec}")]
+
+```
+
+```{r}
+results <- CARD_extraction(
+  df %>% rename(Q = value),
+  CARD_name = CARD_name,
+  simplify = FALSE, 
+  verbose = FALSE
+)
+```
+
+```{r}
+data_nrows <- sapply(results$dataEX, nrow)
+CARD_names <- names(data_nrows[data_nrows == 1])
+```
+
