@@ -24,7 +24,7 @@ Import data:
 
 ```{r}
 df <- readr::read_tsv(
-  system.file( "extdata", "Aqui-FR-Qnat_1852_2008_Seine.csv", package = "EXstat")
+  system.file("extdata", "Aqui-FR-Qnat_1852_2008_Seine.csv", package = "EXstat")
 )
 ```
 
@@ -84,7 +84,7 @@ CARD_name <- CARD_name[!CARD_name %in% c("med{dtRec}")]
 results <- CARD_extraction(
   df %>% rename(Q = value),
   CARD_name = CARD_name,
-  simplify = TRUE, 
+  simplify = TRUE,
   verbose = FALSE
 )
 results
@@ -95,4 +95,3 @@ metaEX <- results$metaEX |> select("variable_en", "name_en", "unit_en")
 dataEX <- CARD_transpose_data(results$dataEX) |> left_join(metaEX, by = join_by("name" == "variable_en"))
 knitr::kable(dataEX)
 ```
-
