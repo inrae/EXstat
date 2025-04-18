@@ -24,7 +24,7 @@ Import data:
 
 ```{r}
 df <- readr::read_tsv(
-  system.file("extdata", "Aqui-FR-Qnat_1852_2008_Seine.csv", package = "EXstat")
+  system.file("examples", "Aqui-FR-Qnat.csv", package = "EXstat")
 )
 ```
 
