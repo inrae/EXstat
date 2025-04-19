@@ -495,13 +495,15 @@ CARD_transpose_data <- function(dataEX) {
 
     # Step 2: Drop the 'name' column and transpose the rest
     transposed <- as.data.frame(t(dataEX[, -1]))
+    names(transposed) <- id
 
     # Step 3: Convert to data.frame and add row names as a column
-    transposed_df <- data.frame(
-        name = rownames(transposed),
-        value = transposed[[1]]
+    transposed_df <- cbind(
+        data.frame(
+            name = rownames(transposed)
+        ),
+        transposed
     )
-    colnames(transposed_df)[2] <- id # Rename the second column with the ID value
 
     # Reset rownames
     rownames(transposed_df) <- NULL
