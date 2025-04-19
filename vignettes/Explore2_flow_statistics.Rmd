@@ -1,8 +1,8 @@
 ---
-title: "Explore2_flow_statistics"
+title: "Hydrological indicator calculations"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Explore2_flow_statistics}
+  %\VignetteIndexEntry{Hydrological indicator calculations}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -14,6 +14,9 @@ knitr::opts_chunk$set(
 )
 ```
 
+In this vignette, we compute all available numerical hydrological indicators
+available in CARD scripts.
+
 ```{r setup}
 library(EXstat)
 library(dplyr)
@@ -24,7 +27,7 @@ Import data:
 
 ```{r read-data}
 df <- readr::read_tsv(
-  system.file("examples", "Aqui-FR-Qnat.csv", package = "EXstat")
+  system.file("examples", "Aqui-FR-Qnat.tsv", package = "EXstat")
 )
 ```
 
