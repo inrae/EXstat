@@ -22,7 +22,7 @@ library(tidyr)
 
 Import data:
 
-```{r}
+```{r read-data}
 df <- readr::read_tsv(
   system.file("examples", "Aqui-FR-Qnat.csv", package = "EXstat")
 )
@@ -30,12 +30,12 @@ df <- readr::read_tsv(
 
 Format data in tidy format:
 
-```{r}
-df <- df |> pivot_longer(!date)
-df
+```{r tidy-format}
+dfQ <- df |> pivot_longer(!"date", values_to = "Q")
+dfQ
 ```
 
-```{r}
+```{r card-management}
 CARD_dir <- "analysis1"
 CARD_name = c("QMNA-5", "BFI_Wal")
 CARD_tmp <- CARD_management(
@@ -45,9 +45,9 @@ CARD_tmp <- CARD_management(
 )
 ```
 
-```{r}
+```{r card-extraction1}
 results <- CARD_extraction(
-  df %>% rename(Q = value),
+  data = dfQ,
   CARD_tmp = CARD_tmp,
   CARD_dir = CARD_dir,
   simplify = TRUE,
@@ -56,7 +56,7 @@ results <- CARD_extraction(
 results
 ```
 
-```{r}
+```{r card-name}
 CARD_path <- system.file("CARD", package = "EXstat")
 CARD_dir <- "__all__/Flow"
 CARD_dirpath = file.path(CARD_path, CARD_dir)
@@ -80,9 +80,9 @@ CARD_name <- CARD_name[!CARD_name %in% c("med{dtRec}")]
 
 ```
 
-```{r}
+```{r card-extraction2}
 results <- CARD_extraction(
-  df %>% rename(Q = value),
+  data = dfQ,
   CARD_name = CARD_name,
   simplify = TRUE,
   verbose = FALSE
@@ -90,8 +90,11 @@ results <- CARD_extraction(
 results
 ```
 
-```{r}
+```{r format-result}
 metaEX <- results$metaEX |> select("variable_en", "name_en", "unit_en")
-dataEX <- CARD_transpose_data(results$dataEX) |> left_join(metaEX, by = join_by("name" == "variable_en"))
-knitr::kable(dataEX)
+dataEX <- metaEX |> 
+  left_join(CARD_transpose_data(results$dataEX),
+            by = join_by("variable_en" == "name")) |>
+  mutate(unit_en = sprintf("$\\mathrm{%s}$", unit_en))
+knitr::kable(dataEX, escape = FALSE)
 ```
